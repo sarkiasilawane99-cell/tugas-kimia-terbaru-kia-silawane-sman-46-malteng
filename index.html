@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHEM-TEST X - Sistem Asesmen Digital Kimia Kelas X SMAN 46 Maluku Tengah</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        navy: {
+                            800: '#0f172a',
+                            900: '#0a0f1d',
+                            950: '#050814'
+                        },
+                        electric: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .animate-spin-slow {
+            animation: spin 12s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans flex flex-col min-h-screen">
+
+    <!-- GLOBAL NAVBAR -->
+    <header class="bg-navy-900 text-white shadow-lg border-b border-electric-600 sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('student')">
+                <div class="w-11 h-11 bg-electric-600 rounded-xl flex items-center justify-center shadow-md shadow-electric-500/30">
+                    <i class="fa-solid fa-atom text-2xl text-white animate-spin-slow"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        CHEM-TEST X
+                        <span class="text-xs bg-electric-500/30 text-blue-300 border border-electric-400/40 px-2 py-0.5 rounded-full font-semibold">
+                            FASE E / KELAS X
+                        </span>
+                    </h1>
+                    <p class="text-xs text-slate-400 flex items-center gap-1">
+                        <i class="fa-solid fa-school text-electric-500"></i> <span id="navSchoolName">SMA NEGERI 46 MALUKU TENGAH</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 bg-slate-800/90 p-1.5 rounded-xl border border-slate-700">
+                <button id="btnTabStudent" onclick="switchView('student')" className="" class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition bg-electric-600 text-white shadow-md">
+                    <i class="fa-solid fa-user-graduate"></i> Ruang Ujian
+                </button>
+                <button id="btnTabTeacher" onclick="switchView('teacher')" class="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition text-slate-300 hover:text-white hover:bg-slate-700/60">
+                    <i class="fa-solid fa-user-gear"></i> Panel Guru
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6">
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 1: PESERTA DIDIK (STUDENT EXAM WORKFLOW) -->
+        <!-- ========================================================================= -->
+        <div id="studentSection" class="space-y-6">
+
+            <!-- STEP 1: WELCOME & IDENTITAS FORM -->
+            <div id="stepWelcome" class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                <div class="bg-gradient-to-r from-navy-900 via-blue-900 to-navy-900 p-6 md:p-8 text-white relative">
+                    <div class="absolute top-4 right-4 opacity-10">
+                        <i class="fa-solid fa-atom text-9xl"></i>
+                    </div>
+                    <div class="relative z-10">
+                        <span class="inline-block bg-electric-500/20 text-blue-300 text-xs font-semibold px-3 py-1 rounded-full mb-3 border border-electric-400/30">
+                            ASESMEN SUMATIF AKHIR SEMESTER (SAS)
+                        </span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold" id="dispAppTitle">CHEM-TEST X</h2>
+                        <p class="text-blue-200 mt-1 text-xs md:text-sm" id="dispSubtitle">Sistem Asesmen Digital Kimia Kelas X</p>
+
+                        <div class="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs bg-slate-800/80 p-3.5 rounded-xl border border-slate-700">
+                            <div>
+                                <span class="text-slate-400 block">Mata Pelajaran:</span>
+                                <span class="font-semibold text-white">Kimia</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Guru Penyusun:</span>
+                                <span class="font-semibold text-white" id="dispTeacher">Sarkia Silawane, S.Pd.</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block">Tahun Pelajaran:</span>
+                                <span class="font-semibold text-white" id="dispYear">2026/2027</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="formIdentitas" onsubmit="event.preventDefault(); proceedToConfirm();" class="p-6 md:p-8 space-y-5">
+                    <div class="border-b border-slate-200 pb-3">
+                        <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2">
+                            <i class="fa-solid fa-id-card text-electric-600"></i> Identitas Peserta Ujian
+                        </h3>
+                        <p class="text-xs text-slate-500">Isi data diri Anda secara lengkap sesuai dengan kartu peserta.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama Lengkap</label>
+                            <input type="text" id="inputNama" required placeholder="Contoh: Muhammad Fajri" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-electric-500 focus:border-electric-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">NIS / NISN</label>
+                            <input type="text" id="inputNisn" required placeholder="Contoh: 0061234567" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-electric-500 focus:border-electric-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Rombongan Belajar (Kelas)</label>
+                            <select id="inputKelas" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-electric-500 text-sm bg-white">
+                                <option value="X-1">Kelas X-1</option>
+                                <option value="X-2">Kelas X-2</option>
+                                <option value="X-3">Kelas X-3</option>
+                                <option value="X-4">Kelas X-4</option>
+                                <option value="X-5">Kelas X-5</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nomor Peserta Ujian</label>
+                            <input type="text" id="inputNoPeserta" required placeholder="Contoh: SAS-X-046" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-electric-500 focus:border-electric-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 text-xs text-blue-900 space-y-1.5">
+                        <p class="font-bold flex items-center gap-1.5 text-blue-800">
+                            <i class="fa-solid fa-flask-vial"></i> Cakupan Materi Ujian SAS:
+                        </p>
+                        <ul class="list-disc list-inside space-y-0.5 text-slate-700 pl-1">
+                            <li><strong>Struktur Atom:</strong> Teori Atom, Partikel Penyusun, Isotop/Isobar/Isoton, Konfigurasi Elektron Bohr & Subkulit (spdf).</li>
+                            <li><strong>Sistem Periodik Unsur:</strong> Perkembangan SPU, Golongan & Periode, serta Sifat Periodik Unsur (Jari-jari, Ionisasi, Elektronegativitas).</li>
+                        </ul>
+                    </div>
+
+                    <button type="submit" id="btnStartExam" class="w-full py-3.5 px-6 rounded-xl font-bold text-white shadow-lg bg-electric-600 hover:bg-electric-700 shadow-electric-600/30 flex items-center justify-center gap-2 transition text-base">
+                        Lanjutkan Ke Konfirmasi Data <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- STEP 2: KONFIRMASI IDENTITAS -->
+            <div id="stepConfirm" class="hidden max-w-2xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-blue-100 text-electric-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-clipboard-check text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-slate-900">Konfirmasi Identitas Peserta</h3>
+                    <p class="text-xs text-slate-500">Periksa kembali identitas Anda sebelum masuk ke ruang ujian digital.</p>
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-5 border border-slate-200 space-y-3 mb-6 text-sm">
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Nama Lengkap:</span>
+                        <span id="confirmNama" class="font-bold text-slate-900"></span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">NIS / NISN:</span>
+                        <span id="confirmNisn" class="font-bold text-slate-900"></span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Kelas / Rombel:</span>
+                        <span id="confirmKelas" class="font-bold text-electric-600"></span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Nomor Ujian:</span>
+                        <span id="confirmNoPeserta" class="font-bold text-slate-900"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Alokasi Waktu:</span>
+                        <span id="confirmDuration" class="font-bold text-slate-900">60 Menit</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="showStep('welcome')" class="w-1/3 py-3 rounded-xl border border-slate-300 font-semibold text-slate-700 hover:bg-slate-100 transition text-sm">
+                        <i class="fa-solid fa-pen-to-square"></i> Ubah Data
+                    </button>
+                    <button onclick="showStep('instructions')" class="w-2/3 py-3 rounded-xl bg-electric-600 hover:bg-electric-700 text-white font-bold shadow-lg shadow-electric-600/30 transition flex items-center justify-center gap-2 text-sm">
+                        Konfirmasi & Petunjuk <i class="fa-solid fa-circle-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: PETUNJUK UJIAN -->
+            <div id="stepInstructions" class="hidden max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200">
+                <h3 class="text-2xl font-extrabold text-slate-900 mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature text-electric-600"></i> Petunjuk & Tata Tertib Ujian
+                </h3>
+                <p class="text-xs text-slate-600 mb-6">Bacalah instruksi teknis di bawah ini dengan seksama sebelum memulai.</p>
+
+                <div class="space-y-3 mb-8 text-xs md:text-sm text-slate-700">
+                    <div class="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 items-start">
+                        <span class="w-6 h-6 rounded-full bg-electric-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                        <p>Jumlah soal sebanyak <strong id="instTotalQ">40 nomor</strong> pilihan ganda (A, B, C, D, E).</p>
+                    </div>
+                    <div class="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 items-start">
+                        <span class="w-6 h-6 rounded-full bg-electric-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                        <p>Waktu pengerjaan adalah <strong id="instDuration">60 menit</strong> dan dihitung mundur secara otomatis oleh sistem CBT.</p>
+                    </div>
+                    <div class="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 items-start">
+                        <span class="w-6 h-6 rounded-full bg-electric-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                        <p>Gunakan tombol <strong>"Tandai Ragu-Ragu"</strong> jika belum yakin dengan jawaban yang dipilih.</p>
+                    </div>
+                    <div class="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 items-start">
+                        <span class="w-6 h-6 rounded-full bg-electric-600 text-white text-xs font-bold flex items-center justify-center shrink-0">4</span>
+                        <p>Jawaban tersimpan secara otomatis. Jika koneksi terputus atau halaman dimuat ulang, jawaban Anda tetap aman.</p>
+                    </div>
+                    <div class="flex gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 items-start">
+                        <span class="w-6 h-6 rounded-full bg-electric-600 text-white text-xs font-bold flex items-center justify-center shrink-0">5</span>
+                        <p>Ketika waktu habis, sistem akan secara otomatis mengumpulkan seluruh jawaban Anda.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between border-t border-slate-200 pt-6">
+                    <button onclick="showStep('confirm')" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 text-xs md:text-sm">
+                        Kembali
+                    </button>
+                    <button onclick="initiateExamSession()" class="px-7 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 flex items-center gap-2 text-sm md:text-base">
+                        <i class="fa-solid fa-play"></i> SAYA SIAP MENGERJAKAN UJIAN
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: RUANG UJIAN CBT -->
+            <div id="stepExam" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6">
+                <!-- SOAL & OPTIONS (3 COLS) -->
+                <div class="lg:col-span-3 space-y-4">
+                    <!-- CONTROLS & TIMER BAR -->
+                    <div class="bg-white rounded-2xl shadow-md p-4 flex flex-wrap justify-between items-center gap-4 border border-slate-200">
+                        <div>
+                            <span id="examMateriBadge" class="text-xs font-bold text-electric-600 tracking-wider uppercase block">STRUKTUR ATOM</span>
+                            <h3 className="text-lg font-bold text-slate-800" class="text-base md:text-lg font-bold text-slate-900">
+                                Soal Nomor <span id="dispCurrentNum">1</span> <span class="text-xs font-normal text-slate-500">/ <span id="dispTotalNum">40</span></span>
+                            </h3>
+                        </div>
+
+                        <div class="flex items-center gap-3 bg-navy-900 text-white px-4 py-2 rounded-xl font-mono text-base md:text-lg font-bold shadow-inner border border-slate-700">
+                            <i class="fa-solid fa-stopwatch text-amber-400 animate-pulse"></i>
+                            <span id="dispTimer" class="text-emerald-400">00:00</span>
+                        </div>
+                    </div>
+
+                    <!-- CARD SOAL -->
+                    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-slate-200 space-y-6">
+                        <div class="flex items-center justify-between text-xs text-slate-500 border-b border-slate-100 pb-3">
+                            <span class="bg-slate-100 px-3 py-1 rounded-full font-medium">
+                                Tingkat: <strong id="dispTingkat" class="text-slate-800">Sedang</strong>
+                            </span>
+                            <span class="bg-blue-50 text-electric-700 px-3 py-1 rounded-full font-semibold">
+                                Bobot: <span id="dispBobot">2.5</span> Poin
+                            </span>
+                        </div>
+
+                        <!-- PERTANYAAN -->
+                        <div id="dispPertanyaan" class="text-base md:text-lg text-slate-800 font-medium leading-relaxed whitespace-pre-line">
+                            <!-- Injected by JS -->
+                        </div>
+
+                        <!-- PILIHAN JAWABAN (A-E) -->
+                        <div id="dispPilihanContainer" class="space-y-3 pt-2">
+                            <!-- Injected by JS -->
+                        </div>
+
+                        <!-- TOMBOL NAVIGASI -->
+                        <div class="flex flex-wrap items-center justify-between gap-3 pt-6 border-t border-slate-100">
+                            <button id="btnPrev" onclick="navQuestion(-1)" class="px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100">
+                                <i class="fa-solid fa-chevron-left"></i> Sebelumnya
+                            </button>
+
+                            <button id="btnFlag" onclick="toggleFlag()" class="px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 border border-amber-300 text-amber-700 hover:bg-amber-50">
+                                <i class="fa-solid fa-flag"></i> <span id="dispFlagText">Tandai Ragu-Ragu</span>
+                            </button>
+
+                            <button id="btnNext" onclick="navQuestion(1)" class="px-6 py-2.5 bg-electric-600 hover:bg-electric-700 text-white font-bold rounded-xl shadow-md flex items-center gap-1.5 text-xs md:text-sm">
+                                Berikutnya <i class="fa-solid fa-chevron-right"></i>
+                            </button>
+
+                            <button id="btnFinishExam" onclick="confirmSubmitExam()" class="hidden px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold rounded-xl shadow-lg shadow-emerald-600/30 flex items-center gap-1.5 text-xs md:text-sm">
+                                <i class="fa-solid fa-check"></i> Akhiri Ujian
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NAVIGATION GRID (1 COL) -->
+                <div class="space-y-4">
+                    <div class="bg-white rounded-2xl shadow-lg p-5 border border-slate-200 space-y-4 sticky top-24">
+                        <h4 class="font-bold text-slate-800 text-xs md:text-sm flex items-center justify-between border-b border-slate-100 pb-2">
+                            <span>Navigasi Nomor Soal</span>
+                            <span id="dispAnsweredRatio" class="text-xs font-normal text-slate-500">0/40</span>
+                        </h4>
+
+                        <!-- LEGEND STATUS -->
+                        <div class="grid grid-cols-2 gap-2 text-[11px]">
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-emerald-500"></span>
+                                <span class="text-slate-600">Terjawab</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-slate-200 border border-slate-300"></span>
+                                <span class="text-slate-600">Belum</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-amber-500"></span>
+                                <span class="text-slate-600">Ragu-ragu</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3.5 h-3.5 rounded bg-white border-2 border-electric-600"></span>
+                                <span class="text-slate-600">Aktif</span>
+                            </div>
+                        </div>
+
+                        <!-- GRID NUMBERS -->
+                        <div id="gridNavButtons" class="grid grid-cols-5 gap-2 max-h-64 overflow-y-auto pt-2 pr-1">
+                            <!-- Injected by JS -->
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100">
+                            <button onclick="confirmSubmitExam()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2 text-xs md:text-sm">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Selesai & Kumpulkan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: HASIL UJIAN PESERTA -->
+            <div id="stepResult" class="hidden max-w-4xl mx-auto space-y-6">
+                <!-- BANNER CARD -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-200">
+                    <div id="resultHeaderBanner" class="p-8 text-center text-white bg-gradient-to-r from-emerald-600 to-teal-700">
+                        <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-3 shadow-inner">
+                            <i id="resultHeaderIcon" class="fa-solid fa-award text-4xl text-white"></i>
+                        </div>
+                        <h2 id="resultHeaderTitle" class="text-2xl md:text-3xl font-black">SELAMAT! ANDA LULUS SAS</h2>
+                        <p class="text-white/90 text-xs md:text-sm mt-1">
+                            Kriteria Ketuntasan Tujuan Pembelajaran (KKTP): <strong id="resKKTPVal">75</strong>
+                        </p>
+
+                        <div class="mt-6 inline-flex flex-col items-center justify-center bg-white/15 px-8 py-4 rounded-2xl border border-white/20 backdrop-blur-sm">
+                            <span class="text-xs uppercase tracking-widest text-white/80 font-bold">NILAI AKHIR</span>
+                            <span id="resFinalScore" class="text-5xl font-black mt-1 text-white">0</span>
+                            <span id="resPredikat" class="text-xs bg-white text-slate-900 font-bold px-3 py-1 rounded-full mt-2">
+                                Predikat: -
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- DETIL STATISTIK -->
+                    <div class="p-6 md:p-8 space-y-6">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <span class="text-xs text-slate-500 font-semibold block">Total Soal</span>
+                                <span id="resTotal" class="text-xl font-bold text-slate-800">40</span>
+                            </div>
+                            <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200">
+                                <span class="text-xs text-emerald-700 font-semibold block">Jawaban Benar</span>
+                                <span id="resBenar" class="text-xl font-bold text-emerald-800">0</span>
+                            </div>
+                            <div class="bg-rose-50 p-4 rounded-xl border border-rose-200">
+                                <span class="text-xs text-rose-700 font-semibold block">Jawaban Salah</span>
+                                <span id="resSalah" class="text-xl font-bold text-rose-800">0</span>
+                            </div>
+                            <div class="bg-slate-100 p-4 rounded-xl border border-slate-300">
+                                <span class="text-xs text-slate-600 font-semibold block">Tidak Dijawab</span>
+                                <span id="resKosong" class="text-xl font-bold text-slate-700">0</span>
+                            </div>
+                        </div>
+
+                        <!-- CAPAIAN PER MATERI -->
+                        <div class="space-y-3">
+                            <h4 class="font-bold text-slate-800 text-xs md:text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-electric-600"></i> Penguasaan Capaian Pembelajaran per Materi
+                            </h4>
+                            <div id="resTopicBars" class="space-y-3">
+                                <!-- Injected by JS -->
+                            </div>
+                        </div>
+
+                        <!-- ACTION BUTTONS -->
+                        <div class="pt-4 border-t border-slate-200 flex flex-wrap gap-3 justify-between">
+                            <button onclick="window.print()" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 flex items-center gap-2 text-xs md:text-sm">
+                                <i class="fa-solid fa-print"></i> Cetak Hasil Ujian
+                            </button>
+                            <button onclick="resetStudentExam()" class="px-6 py-2.5 bg-electric-600 hover:bg-electric-700 text-white font-bold rounded-xl shadow-md text-xs md:text-sm">
+                                Halaman Utama
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PEMBAHASAN SOAL LENGKAP -->
+                <div id="resExplanationSection" class="bg-white rounded-2xl shadow-lg p-6 md:p-8 border border-slate-200 space-y-6">
+                    <h3 class="text-lg font-bold text-slate-800 border-b border-slate-200 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open text-electric-600"></i> Pembahasan & Kunci Jawaban
+                    </h3>
+
+                    <div id="resExplanationList" class="space-y-6">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ========================================================================= -->
+        <!-- SECTION 2: PANEL GURU / ADMIN -->
+        <!-- ========================================================================= -->
+        <div id="teacherSection" class="hidden space-y-6">
+
+            <!-- LOGIN ADMIN MODAL / FORM -->
+            <div id="teacherLoginForm" class="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200 space-y-5">
+                <div class="text-center">
+                    <div class="w-14 h-14 bg-blue-100 text-electric-600 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-lock text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900">Login Guru / Pengawas</h2>
+                    <p class="text-xs text-slate-500 mt-1">Masukkan PIN untuk mengelola bank soal dan melihat statistik kelas.</p>
+                </div>
+
+                <form onsubmit="event.preventDefault(); handleTeacherLogin();" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">PIN Akses Admin</label>
+                        <input type="password" id="inputTeacherPin" required placeholder="PIN Default: admin123" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-electric-500 text-center font-mono text-lg tracking-widest">
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-electric-600 hover:bg-electric-700 text-white font-bold rounded-xl shadow-lg shadow-electric-600/30 transition text-sm">
+                        Masuk Ke Dashboard Guru
+                    </button>
+                </form>
+                <p class="text-center text-xs text-slate-400">PIN Default: <code class="bg-slate-100 px-2 py-0.5 rounded text-slate-700 font-bold">admin123</code></p>
+            </div>
+
+            <!-- TEACHER DASHBOARD CONTENT -->
+            <div id="teacherDashboard" class="hidden space-y-6">
+                <!-- SUB NAV BAR -->
+                <div class="bg-white rounded-2xl shadow-md p-3 border border-slate-200 flex flex-wrap justify-between items-center gap-3">
+                    <div class="flex flex-wrap gap-2">
+                        <button id="btnSubBank" onclick="switchTeacherSubTab('bank')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition bg-electric-600 text-white shadow-md">
+                            <i class="fa-solid fa-database"></i> Bank Soal (<span id="cntBankSoal">40</span>)
+                        </button>
+                        <button id="btnSubSettings" onclick="switchTeacherSubTab('settings')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                            <i class="fa-solid fa-sliders"></i> Pengaturan Ujian
+                        </button>
+                        <button id="btnSubResults" onclick="switchTeacherSubTab('results')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                            <i class="fa-solid fa-table"></i> Rekap Nilai (<span id="cntHasilPeserta">0</span>)
+                        </button>
+                        <button id="btnSubAnalytics" onclick="switchTeacherSubTab('analytics')" class="px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100">
+                            <i class="fa-solid fa-chart-column"></i> Analisis Kelas
+                        </button>
+                    </div>
+
+                    <button onclick="logoutTeacher()" class="px-3.5 py-2 rounded-xl border border-rose-200 text-rose-600 font-semibold hover:bg-rose-50 text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> Keluar Admin
+                    </button>
+                </div>
+
+                <!-- SUB TAB 1: BANK SOAL CRUD -->
+                <div id="subTabBank" class="space-y-4">
+                    <div class="bg-white rounded-2xl shadow-md p-4 border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                        <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[280px]">
+                            <input type="text" id="searchQuestion" oninput="renderQuestionBankList()" placeholder="Cari kata kunci soal..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:ring-2 focus:ring-electric-500 flex-1">
+                            <select id="filterMateri" onchange="renderQuestionBankList()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs bg-white">
+                                <option value="All">Semua Materi</option>
+                                <option value="Struktur Atom">Struktur Atom</option>
+                                <option value="Sistem Periodik Unsur">Sistem Periodik Unsur</option>
+                            </select>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="openQuestionModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-plus"></i> Tambah Soal
+                            </button>
+                            <button onclick="exportBankJSON()" class="px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold hover:bg-slate-100 flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-export"></i> Ekspor JSON
+                            </button>
+                            <label class="px-3.5 py-2 border border-slate-300 rounded-xl text-xs font-semibold hover:bg-slate-100 cursor-pointer flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-import"></i> Impor JSON
+                                <input type="file" accept=".json" onchange="importBankJSON(event)" class="hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="questionBankList" class="space-y-4">
+                        <!-- Injected by JS -->
+                    </div>
+                </div>
+
+                <!-- SUB TAB 2: PENGATURAN UJIAN -->
+                <div id="subTabSettings" class="hidden max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-slate-200 space-y-6">
+                    <h3 class="text-xl font-bold text-slate-900 border-b border-slate-200 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-electric-600"></i> Pengaturan Sistem Ujian
+                    </h3>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs md:text-sm">
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Status Akses Ujian</label>
+                            <select id="setExamActive" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold bg-white">
+                                <option value="true">AKTIF (Peserta dapat mengerjakan)</option>
+                                <option value="false">NON-AKTIF (Ujian ditutup sementara)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Batas KKTP Minimum</label>
+                            <input type="number" id="setKKTP" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Durasi Ujian (Menit)</label>
+                            <input type="number" id="setDuration" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Jumlah Soal per Sesi</label>
+                            <input type="number" id="setTotalQ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 font-bold">
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Acak Urutan Soal</label>
+                            <select id="setShuffleQ" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white">
+                                <option value="true">Ya, Acak Soal</option>
+                                <option value="false">Tidak, Sesuai Urutan</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 uppercase mb-1">Acak Pilihan Jawaban (A-E)</label>
+                            <select id="setShuffleOpt" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-white">
+                                <option value="true">Ya, Acak Opsi</option>
+                                <option value="false">Tidak, Sesuai urutan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="saveExamSettings()" class="w-full py-3 bg-electric-600 hover:bg-electric-700 text-white font-bold rounded-xl shadow-md flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-floppy-disk"></i> Simpan Pengaturan
+                    </button>
+                </div>
+
+                <!-- SUB TAB 3: REKAP HASIL SISWA -->
+                <div id="subTabResults" class="hidden bg-white rounded-2xl shadow-xl p-6 border border-slate-200 space-y-4">
+                    <div class="flex flex-wrap justify-between items-center gap-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Rekapitulasi Nilai Peserta Didik</h3>
+                            <p class="text-xs text-slate-500">Daftar siswa yang telah menyelesaikan tes beserta skor akhirnya.</p>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <button onclick="exportResultsCSV()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-md">
+                                <i class="fa-solid fa-file-excel"></i> Unduh Rekap (.CSV)
+                            </button>
+                            <button onclick="clearAllResults()" class="px-3 py-2 bg-rose-100 text-rose-700 font-semibold rounded-xl text-xs hover:bg-rose-200">
+                                Reset Rekap
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 border-b border-slate-200 uppercase font-bold">
+                                    <th class="p-3">No</th>
+                                    <th class="p-3">Waktu</th>
+                                    <th class="p-3">Nama Siswa</th>
+                                    <th class="p-3">NISN</th>
+                                    <th class="p-3">Kelas</th>
+                                    <th class="p-3">B / S / K</th>
+                                    <th class="p-3">Nilai</th>
+                                    <th class="p-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableResultsBody" class="divide-y divide-slate-200">
+                                <!-- Injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SUB TAB 4: ANALISIS KELAS -->
+                <div id="subTabAnalytics" class="hidden space-y-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200">
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Total Peserta Ujian</span>
+                            <span id="statTotalStudents" class="text-2xl font-black text-slate-900 mt-1 block">0 Siswa</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200">
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Rata-Rata Kelas</span>
+                            <span id="statAvgScore" class="text-2xl font-black text-electric-600 mt-1 block">0</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200">
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Nilai Tertinggi</span>
+                            <span id="statMaxScore" class="text-2xl font-black text-emerald-600 mt-1 block">0</span>
+                        </div>
+                        <div class="bg-white p-5 rounded-2xl shadow-md border border-slate-200">
+                            <span class="text-xs text-slate-500 font-bold uppercase block">Persentase Ketuntasan</span>
+                            <span id="statPassRate" class="text-2xl font-black text-purple-600 mt-1 block">0%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 space-y-4">
+                        <h4 class="font-bold text-slate-800 text-sm">Grafik Ketuntasan Hasil Belajar</h4>
+                        <div class="w-full max-w-md mx-auto h-64">
+                            <canvas id="chartPassRate"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- MODAL ADD / EDIT QUESTION -->
+    <div id="modalQuestion" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-6 space-y-4 my-8">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                <h3 id="modalQTitle" class="font-bold text-lg text-slate-800">Tambah Soal Baru</h3>
+                <button onclick="closeQuestionModal()" class="p-1 text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <form onsubmit="event.preventDefault(); saveQuestionForm();" class="space-y-3 text-xs">
+                <input type="hidden" id="editQId">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="font-bold block mb-1">Materi</label>
+                        <select id="editQMateri" class="w-full p-2 border rounded-lg bg-white">
+                            <option value="Struktur Atom">Struktur Atom</option>
+                            <option value="Sistem Periodik Unsur">Sistem Periodik Unsur</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-bold block mb-1">Tingkat Kesulitan</label>
+                        <select id="editQTingkat" class="w-full p-2 border rounded-lg bg-white">
+                            <option value="Mudah">Mudah</option>
+                            <option value="Sedang">Sedang</option>
+                            <option value="HOTS">HOTS / Sulit</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Indikator Soal</label>
+                    <input type="text" id="editQIndikator" required class="w-full p-2 border rounded-lg">
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Pertanyaan Soal</label>
+                    <textarea id="editQPertanyaan" rows="3" required class="w-full p-2 border rounded-lg"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="font-bold block">Pilihan Jawaban A - E (Pilih Radio untuk Kunci Jawaban)</label>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="editQKunci" value="0" checked>
+                        <span class="font-bold">A.</span>
+                        <input type="text" id="editOpt0" required class="flex-1 p-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="editQKunci" value="1">
+                        <span class="font-bold">B.</span>
+                        <input type="text" id="editOpt1" required class="flex-1 p-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="editQKunci" value="2">
+                        <span class="font-bold">C.</span>
+                        <input type="text" id="editOpt2" required class="flex-1 p-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="editQKunci" value="3">
+                        <span class="font-bold">D.</span>
+                        <input type="text" id="editOpt3" required class="flex-1 p-2 border rounded-lg">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="radio" name="editQKunci" value="4">
+                        <span class="font-bold">E.</span>
+                        <input type="text" id="editOpt4" required class="flex-1 p-2 border rounded-lg">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="font-bold block mb-1">Pembahasan Guru</label>
+                    <textarea id="editQPembahasan" rows="2" required class="w-full p-2 border rounded-lg"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+                    <button type="button" onclick="closeQuestionModal()" class="px-4 py-2 border rounded-xl font-semibold text-xs">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-electric-600 text-white font-bold rounded-xl text-xs shadow-md">
+                        Simpan Soal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-navy-900 text-slate-400 text-xs py-4 px-4 text-center border-t border-slate-800 mt-auto no-print">
+        <p>© 2026 CHEM-TEST X - SMA Negeri 46 Maluku Tengah. Guru Pengampu: <strong>Sarkia Silawane, S.Pd.</strong></p>
+    </footer>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // --- 40 INITIAL BANK SOAL KIMIA FASE E ---
+        const DEFAULT_BANK = [
+            // STRUKTUR ATOM (20 SOAL)
+            { id: "SA-01", materi: "Struktur Atom", indikator: "Menjelaskan perkembangan teori atom Bohr dan kelemahannya", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Model atom Bohr menggambarkan elektron beredar mengelilingi inti pada tingkat energi tertentu. Kelemahan utama model atom Bohr adalah...", pilihan: ["Tidak dapat menjelaskan inti atom bermuatan positif", "Gagal menjelaskan spektrum atom bermuatan banyak/banyak elektron", "Belum menemukan partikel neutron", "Menganggap atom berupa bola pejal tidak terbagi", "Tidak dapat menentukan massa atom relatif"], kunci: 1, pembahasan: "Model Bohr hanya sukses untuk spesi ber-1 elektron (seperti H), namun gagal menjelaskan spektrum atomBerelektron banyak." },
+            { id: "SA-02", materi: "Struktur Atom", indikator: "Mengidentifikasi partikel penyusun atom netral", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Atom Kalsium netral dituliskan dengan notasi ₄₀₂₀Ca. Jumlah proton, neutron, dan elektron secara berturut-turut adalah...", pilihan: ["20, 20, dan 20", "20, 40, dan 20", "40, 20, dan 20", "20, 20, dan 40", "40, 40, dan 20"], kunci: 0, pembahasan: "Proton = 20, Elektron (netral) = 20, Neutron = Nomor Massa - Nomor Atom = 40 - 20 = 20." },
+            { id: "SA-03", materi: "Struktur Atom", indikator: "Menentukan jumlah partikel pada ion positif", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Ion Aluminium dirumuskan sebagai ₂₇₁₃Al³⁺. Jumlah proton, neutron, dan elektron pada ion tersebut adalah...", pilihan: ["13 proton, 14 neutron, 13 elektron", "13 proton, 14 neutron, 10 elektron", "13 proton, 27 neutron, 10 elektron", "10 proton, 14 neutron, 13 elektron", "16 proton, 14 neutron, 10 elektron"], kunci: 1, pembahasan: "Proton = 13, Neutron = 27 - 13 = 14. Melepas 3 elektron -> Elektron = 13 - 3 = 10." },
+            { id: "SA-04", materi: "Struktur Atom", indikator: "Membedakan Isotop, Isobar, dan Isoton", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Diberikan spesi berikut:\n(1) ₁₂₆C dan ₁₃₆C\n(2) ₁₄₆C dan ₁₄₇N\n(3) ₂₃₁₁Na dan ₂₄₁₂Mg\nPasangan yang merupakan ISOTOP, ISOBAR, dan ISOTON secara berturut-turut adalah...", pilihan: ["(1), (2), dan (3)", "(1), (3), dan (2)", "(2), (1), dan (3)", "(3), (2), dan (1)", "(2), (3), dan (1)"], kunci: 0, pembahasan: "(1) Isotop (Z sama: 6). (2) Isobar (A sama: 14). (3) Isoton (Neutron sama: 23-11=12 & 24-12=12)." },
+            { id: "SA-05", materi: "Struktur Atom", indikator: "Konfigurasi elektron Bohr (Kulit K,L,M,N)", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Konfigurasi elektron Bohr untuk unsur Kalium dengan nomor atom 19 adalah...", pilihan: ["2 . 8 . 9", "2 . 8 . 8 . 1", "2 . 9 . 8", "2 . 8 . 7 . 2", "2 . 10 . 7"], kunci: 1, pembahasan: "Pengisian kulit: K=2, L=8, M=8, N=1 (total 19)." },
+            { id: "SA-06", materi: "Struktur Atom", indikator: "Menentukan elektron valensi atom", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Atom Fosfor memiliki nomor atom 15. Jumlah elektron valensi (elektron kulit terluar) dari Fosfor adalah...", pilihan: ["3", "5", "7", "8", "2"], kunci: 1, pembahasan: "Konfigurasi ₁₅P = 2 . 8 . 5. Elektron valensinya adalah 5." },
+            { id: "SA-07", materi: "Struktur Atom", indikator: "Konfigurasi elektron subkulit Aufbau", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Konfigurasi elektron subkulit (spdf) untuk atom Besi (₂₆Fe) dalam keadaan dasar adalah...", pilihan: ["1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁸", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d⁷", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 4p⁶", "1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁵ 4s³"], kunci: 0, pembahasan: "Urutan tingkat energi Aufbau: 1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁶ (26e⁻)." },
+            { id: "SA-08", materi: "Struktur Atom", indikator: "Konfigurasi elektron ion transisi", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Konfigurasi elektron subkulit untuk ion Fe³⁺ (Nomor atom Fe = 26) adalah...", pilihan: ["[Ar] 3d⁵ 4s¹", "[Ar] 3d⁶", "[Ar] 3d⁵", "[Ar] 3d⁴ 4s²", "[Ar] 3d³ 4s²"], kunci: 2, pembahasan: "Fe netral: [Ar] 4s² 3d⁶. Membentuk Fe³⁺ melepas 2e⁻ dari kulit 4s dan 1e⁻ dari 3d -> [Ar] 3d⁵." },
+            { id: "SA-09", materi: "Struktur Atom", indikator: "Pengecualian subkulit d setengah penuh/penuh", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Atom Tembaga (₂₉Cu) memiliki konfigurasi terluar yang stabil sesuai kaidah subkulit d terisi penuh, yaitu...", pilihan: ["1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁹", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s¹ 3d¹⁰", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s⁰ 3d¹¹", "1s² 2s² 2p⁶ 3s² 3p⁵ 4s² 3d¹⁰", "1s² 2s² 2p⁶ 3s² 3p⁶ 4s² 3d⁸ 4p¹"], kunci: 1, pembahasan: "Konfigurasi Cu mengalami promosi 1e⁻ dari 4s ke 3d agar subkulit 3d penuh (3d¹⁰) -> 4s¹ 3d¹⁰." },
+            { id: "SA-10", materi: "Struktur Atom", indikator: "Menentukan 4 bilangan kuantum elektron terakhir", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Harga keempat bilangan kuantum (n, l, m, s) untuk elektron terakhir atom ₁₇Cl adalah...", pilihan: ["n = 3, l = 1, m = 0, s = -1/2", "n = 3, l = 1, m = +1, s = +1/2", "n = 3, l = 0, m = 0, s = -1/2", "n = 3, l = 2, m = 0, s = -1/2", "n = 2, l = 1, m = -1, s = +1/2"], kunci: 0, pembahasan: "₁₇Cl: 3p⁵. n=3, l=1 (subkulit p). Pengisian 5e⁻ pada orbital (-1, 0, +1): e5 jatuh di m=0 dengan spin bawah (s = -1/2)." },
+            { id: "SA-11", materi: "Struktur Atom", indikator: "Penemu partikel elektron", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Penemu partikel bermuatan negatif (elektron) melalui percobaan tabung sinar katode adalah...", pilihan: ["Ernest Rutherford", "John Dalton", "J.J. Thomson", "James Chadwick", "Eugen Goldstein"], kunci: 2, pembahasan: "J.J. Thomson menemukan elektron melalui eksperimen sinar katode pada tahun 1897." },
+            { id: "SA-12", materi: "Struktur Atom", indikator: "Eksperimen lempeng emas Rutherford", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Percobaan penembakan lempeng emas dengan sinar alfa yang memunculkan hipotesis keberadaan inti atom dilakukan oleh...", pilihan: ["J.J. Thomson", "Ernest Rutherford", "Niels Bohr", "Louis de Broglie", "James Chadwick"], kunci: 1, pembahasan: "Rutherford membuktikan sebagian besar partikel alfa menembus lempeng emas karena atom sebagian besar adalah ruang kosong dengan inti terpusat." },
+            { id: "SA-13", materi: "Struktur Atom", indikator: "Penemuan partikel neutron", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Partikel dasar penyusun inti atom yang bersifat netral ditemukan oleh...", pilihan: ["J.J. Thomson", "Ernest Rutherford", "James Chadwick", "Niels Bohr", "Henry Moseley"], kunci: 2, pembahasan: "James Chadwick menemukan neutron pada tahun 1932." },
+            { id: "SA-14", materi: "Struktur Atom", indikator: "Notasi anion dan nomor massa", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Ion X²⁻ memiliki 18 elektron dan 16 neutron. Nomor atom dan nomor massa unsur X netral adalah...", pilihan: ["16 dan 32", "18 dan 34", "20 dan 36", "16 dan 34", "18 dan 32"], kunci: 0, pembahasan: "Ion X²⁻ menangkap 2e⁻ -> Z = 18 - 2 = 16. Nomor Massa A = Z + n = 16 + 16 = 32." },
+            { id: "SA-15", materi: "Struktur Atom", indikator: "Analisis data kation", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Ion M³⁺ memiliki konfigurasi 1s² 2s² 2p⁶. Jika jumlah neutron atom M adalah 14, nomor massa atom M adalah...", pilihan: ["13", "24", "27", "30", "23"], kunci: 2, pembahasan: "Jumlah e⁻ pada M³⁺ = 10 -> Z = 10 + 3 = 13. Nomor massa A = 13 + 14 = 27 (Aluminium)." },
+            { id: "SA-16", materi: "Struktur Atom", indikator: "Konsep Orbital Mekanika Kuantum", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Daerah kebolehjadian terbesar ditemukannya elektron di sekitar inti atom disebut...", pilihan: ["Lintasan sirkular", "Orbital", "Kulit utama", "Subkulit netral", "Foton"], kunci: 1, pembahasan: "Menurut teori mekanika kuantum (Heisenberg & Schrodinger), daerah kebolehjadian menemukan elektron dinamakan orbital." },
+            { id: "SA-17", materi: "Struktur Atom", indikator: "Aplikasi isotop Karbon-14", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Isotop Karbon-14 (₁₄₆C) dimanfaatkan dalam bidang arkeologi dan geologi untuk...", pilihan: ["Membunuh sel kanker", "Menentukan usia fosil/artefak purbakala", "Bahan bakar reaktor nuklir", "Uji kebocoran pipa", "Sterilisasi medis"], kunci: 1, pembahasan: "Isotop C-14 digunakan dalam penanggalan radiokarbon untuk mengukur umur fosil organik." },
+            { id: "SA-18", materi: "Struktur Atom", indikator: "Aturan Hund pada pengisian orbital", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Berdasarkan Aturan Hund, pengisian elektron pada orbital-orbital yang setingkat energi dilakukan dengan cara...", pilihan: ["Mengisi orbital secara berpasangan dahulu", "Mengisi orbital sendiri-sendiri dengan spin paralel sebelum berpasangan", "Mengisi dari tingkat energi tertinggi", "Memilih orbital berarah searah jarum jam", "Membebaskan foton energi"], kunci: 1, pembahasan: "Aturan Hund: Elektron mengisi orbital setingkat satu per satu dengan spin sejajar sebelum berpasangan." },
+            { id: "SA-19", materi: "Struktur Atom", indikator: "Prinsip Larangan Pauli", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Prinsip Larangan Pauli menyatakan bahwa dalam satu atom tidak boleh ada 2 elektron yang memiliki...", pilihan: ["Muatan listrik berbeda", "Keempat bilangan kuantum yang persis sama", "Jumlah valensi identik", "Massa relatif sama", "Spin sejajar"], kunci: 1, pembahasan: "Larangan Pauli: Tidak ada dua elektron dalam satu atom yang memiliki n, l, m, s sama persis." },
+            { id: "SA-20", materi: "Struktur Atom", indikator: "Isoelektronik ion dengan gas mulia", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Ion X²⁺ isoelektronik (jumlah elektron sama) dengan atom ₁₈Ar. Nomor atom unsur X netral adalah...", pilihan: ["16", "18", "20", "22", "24"], kunci: 2, pembahasan: "Jumlah e⁻ pada Ar = 18. Ion X²⁺ memiliki 18e⁻ setelah melepas 2e⁻ -> Z = 18 + 2 = 20." },
+
+            // SISTEM PERIODIK UNSUR (20 SOAL)
+            { id: "SPU-01", materi: "Sistem Periodik Unsur", indikator: "Triad Dobereiner", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Pengelompokan unsur Hukum Triad Dobereiner didasarkan pada prinsip bahwa...", pilihan: ["Massa atom unsur tengah merupakan rata-rata massa unsur pertama dan ketiga", "Sifat unsur berulang setiap urutan ke-8", "Unsur disusun menurut kenaikan nomor atom", "Terdapat 8 golongan utama", "Unsur logam dipisahkan dari nonlogam"], kunci: 0, pembahasan: "Triad Dobereiner mengelompokkan 3 unsur mirip sifat di mana massa unsur tengah = (Massa A + Massa C) / 2." },
+            { id: "SPU-02", materi: "Sistem Periodik Unsur", indikator: "Hukum Oktaf Newlands", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Hukum Oktaf yang menyatakan kemiripan sifat unsur berulang pada unsur ke-8 dikemukakan oleh...", pilihan: ["Dmitri Mendeleev", "John Newlands", "Henry Moseley", "Lothar Meyer", "Robert Boyle"], kunci: 1, pembahasan: "John Newlands mencetuskan Hukum Oktaf pada tahun 1864." },
+            { id: "SPU-03", materi: "Sistem Periodik Unsur", indikator: "Dasar SPU Modern Moseley", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Sistem Periodik Unsur Modern yang digunakan saat ini disusun oleh Henry Moseley berdasarkan...", pilihan: ["Kenaikan massa atom relatif", "Kenaikan nomor atom (jumlah proton)", "Jumlah neutron", "Kemiripan warna fisik", "Jumlah isotop alami"], kunci: 1, pembahasan: "SPU Modern disusun berdasarkan kenaikan nomor atom (jumlah proton)." },
+            { id: "SPU-04", materi: "Sistem Periodik Unsur", indikator: "Menentukan Golongan & Periode", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Unsur X memiliki nomor atom 17. Posisi unsur X dalam Tabel Periodik Modern adalah...", pilihan: ["Golongan VA, Periode 3", "Golongan VIA, Periode 3", "Golongan VIIA, Periode 3", "Golongan VIIA, Periode 4", "Golongan VIIIB, Periode 3"], kunci: 2, pembahasan: "₁₇X = [Ne] 3s² 3p⁵. Kulit terluar = 3 (Periode 3). e⁻ valensi = 2+5 = 7 (Golongan VIIA)." },
+            { id: "SPU-05", materi: "Sistem Periodik Unsur", indikator: "Posisi Unsur Transisi blok d", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Unsur Titanium (₂₂Ti) memiliki konfigurasi [Ar] 4s² 3d². Golongan dan periode unsur Ti adalah...", pilihan: ["Golongan IVB, Periode 4", "Golongan IIIA, Periode 4", "Golongan IVA, Periode 4", "Golongan VB, Periode 4", "Golongan IIB, Periode 4"], kunci: 0, pembahasan: "Akhiran 4s² 3d² -> Kulit terbesar 4 (Periode 4), e⁻ valensi d+s = 2+2 = 4 (Golongan IVB)." },
+            { id: "SPU-06", materi: "Sistem Periodik Unsur", indikator: "Trend Jari-jari Atom dalam Periode", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Kecenderungan ukuran jari-jari atom dari kiri ke kanan dalam satu periode adalah...", pilihan: ["Makin besar karena jumlah kulit bertambah", "Makin kecil karena muatan inti (proton) bertambah sehingga tarikan ke e⁻ makin kuat", "Tetap sama", "Meningkat drastis", "Tidak beraturan"], kunci: 1, pembahasan: "Dari kiri ke kanan satu periode, jumlah kulit tetap tapi Z (proton) naik, sehingga tarikan inti makin kuat dan jari-jari mengecil." },
+            { id: "SPU-07", materi: "Sistem Periodik Unsur", indikator: "Urutan Jari-jari Atom Golongan IA", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Diketahui unsur Golongan IA: ₃Li, ₁₁Na, ₁₉K, ₃₇Rb. Urutan kenaikan jari-jari atom (dari terkecil ke terbesar) adalah...", pilihan: ["Rb < K < Na < Li", "Li < Na < K < Rb", "Na < Li < K < Rb", "K < Na < Li < Rb", "Li < K < Na < Rb"], kunci: 1, pembahasan: "Dari atas ke bawah satu golongan, jumlah kulit bertambah sehingga jari-jari makin besar: Li < Na < K < Rb." },
+            { id: "SPU-08", materi: "Sistem Periodik Unsur", indikator: "Definisi Energi Ionisasi", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Energi minimum yang dibutuhkan oleh atom netral dalam wujud gas untuk melepaskan 1 elektron terluar disebut...", pilihan: ["Afinitas Elektron", "Elektronegativitas", "Energi Ionisasi", "Keelektropositifan", "Energi Ikatan"], kunci: 2, pembahasan: "Energi Ionisasi adalah energi minimum lepas elektron terluar atom gas netral." },
+            { id: "SPU-09", materi: "Sistem Periodik Unsur", indikator: "Analisis Data Energi Ionisasi Periode 3", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Data Energi Ionisasi Pertama (kJ/mol) unsur acak periode 3: P:738, Q:578, R:496, S:1000, T:1251. Urutan unsur dari kiri ke kanan (kenaikan nomor atom) adalah...", pilihan: ["R - Q - P - S - T", "R - P - Q - S - T", "T - S - P - Q - R", "P - Q - R - S - T", "Q - P - R - S - T"], kunci: 1, pembahasan: "Secara umum EI naik dari kiri ke kanan (dengan anomali Mg-Al): R(496, Na) -> P(738, Mg) -> Q(578, Al) -> S(1000, P) -> T(1251, Cl). Urutan: R-P-Q-S-T." },
+            { id: "SPU-10", materi: "Sistem Periodik Unsur", indikator: "Konsep Afinitas Elektron", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Besarnya perubahan energi saat atom netral fase gas menangkap satu elektron dinamakan...", pilihan: ["Afinitas Elektron", "Elektronegativitas", "Energi Ionisasi", "Jari-jari Atom", "Daya Reduksi"], kunci: 0, pembahasan: "Afinitas Elektron adalah energi yang dilepas/diserap saat menangkap 1 elektron." },
+            { id: "SPU-11", materi: "Sistem Periodik Unsur", indikator: "Keelektronegatifan Tertinggi", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Unsur yang memiliki skala keelektronegatifan paling tinggi (4,0) dalam tabel periodik adalah...", pilihan: ["Fransium (Fr)", "Fluorin (F)", "Oksigen (O)", "Klorin (Cl)", "Helium (He)"], kunci: 1, pembahasan: "Fluorin (F) memiliki keelektronegatifan paling tinggi di antara semua unsur." },
+            { id: "SPU-12", materi: "Sistem Periodik Unsur", indikator: "Unsur Metaloid Semikonduktor", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Pasangan unsur metaloid yang memiliki sifat antara logam dan nonlogam adalah...", pilihan: ["Na dan K", "Si dan Ge", "Cl dan Br", "Fe dan Cu", "He dan Ne"], kunci: 1, pembahasan: "Silikon (Si) dan Germanium (Ge) merupakan metaloid semikonduktor." },
+            { id: "SPU-13", materi: "Sistem Periodik Unsur", indikator: "Nama Khusus Golongan Halogen", tingkat: "Mudah", bobot: 2.5, pertanyaan: "Unsur-unsur Golongan VIIA (F, Cl, Br, I, At) dikenal dengan nama kelompok...", pilihan: ["Logam Alkali", "Alkali Tanah", "Halogen", "Gas Mulia", "Kalkogen"], kunci: 2, pembahasan: "Golongan VIIA disebut Halogen." },
+            { id: "SPU-14", materi: "Sistem Periodik Unsur", indikator: "Kestabilan Gas Mulia", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Unsur Gas Mulia (VIIIA) sangat stabil dan sukar bereaksi karena...", pilihan: ["Memiliki jari-jari terbesar", "Kulit terluar terisi penuh elektron (duplet/oktet)", "Energi ionisasi paling rendah", "Sangat mudah melepas elektron", "Memiliki afinitas nol"], kunci: 1, pembahasan: "Gas Mulia stabil karena konfigurasi elektron valensinya penuh (8e⁻ atau 2e⁻ pada He)." },
+            { id: "SPU-15", materi: "Sistem Periodik Unsur", indikator: "Jari-jari Ion Kation vs Atom Netral", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Pernyataan yang benar mengenai jari-jari kation dibanding atom netralnya adalah...", pilihan: ["Jari-jari Na⁺ lebih besar dari atom Na", "Jari-jari Na⁺ lebih kecil dari atom Na", "Jari-jari F⁻ lebih kecil dari atom F", "Jari-jari ion selalu sama dengan atomnya", "Pelepasan elektron memperbesar jari-jari"], kunci: 1, pembahasan: "Kation terbentuk karena melepas elektron -> tolakan e⁻ berkurang / kulit berkurang -> Jari-jari kation LEBIH KECIL dari atom netral." },
+            { id: "SPU-16", materi: "Sistem Periodik Unsur", indikator: "Spesi Isoelektronik Jari-jari", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Spesi isoelektronik berikut: ₁₁Na⁺, ₁₂Mg²⁺, ₉F⁻, ₈O²⁻. Urutan jari-jari dari TERBESAR ke TERKECIL adalah...", pilihan: ["Mg²⁺ > Na⁺ > F⁻ > O²⁻", "O²⁻ > F⁻ > Na⁺ > Mg²⁺", "Na⁺ > Mg²⁺ > O²⁻ > F⁻", "F⁻ > O²⁻ > Mg²⁺ > Na⁺", "Mg²⁺ > O²⁻ > Na⁺ > F⁻"], kunci: 1, pembahasan: "Pada spesi isoelektronik (10e⁻), makin kecil jumlah proton Z, makin lemah tarikan inti -> Jari-jari makin BESAR. O²⁻(Z=8) > F⁻(Z=9) > Na⁺(Z=11) > Mg²⁺(Z=12)." },
+            { id: "SPU-17", materi: "Sistem Periodik Unsur", indikator: "Sifat SPU Logam vs Nonlogam", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Dari kiri ke kanan dalam satu periode, sifat logam dan kecenderungan reduktor akan...", pilihan: ["Semakin bertambah", "Semakin berkurang", "Tetap", "Sama dengan gas mulia", "Naik drastis"], kunci: 1, pembahasan: "Dari kiri ke kanan satu periode, sifat logam dan sifat reduktor (melepas e⁻) berkurang." },
+            { id: "SPU-18", materi: "Sistem Periodik Unsur", indikator: "Analisis Konfigurasi Valensi Halogen", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Unsur Z memiliki konfigurasi valensi 3s² 3p⁵. Pernyataan yang benar tentang unsur Z adalah...", pilihan: ["Z adalah logam reaktif", "Z termasuk Golongan VIIA (Halogen) dan cenderung menangkap 1 elektron", "Z berada di periode 4", "Z memiliki keelektronegatifan paling rendah", "Z membentuk ion Z²⁺"], kunci: 1, pembahasan: "Akhiran 3s² 3p⁵ -> e⁻ valensi = 7 -> Golongan VIIA (Halogen) yang mudah menangkap 1e⁻ membentuk Z⁻." },
+            { id: "SPU-19", materi: "Sistem Periodik Unsur", indikator: "Aplikasi Klorin dan Iodium", tingkat: "Sedang", bobot: 2.5, pertanyaan: "Kegunaan unsur Klorin dan Iodium dalam kehidupan sehari-hari berturut-turut adalah...", pilihan: ["Disinfektan air/pemutih dan antiseptik obat luka", "Bahan bakar roket dan bahan pembuat kaca", "Pupuk dan pengawet makanan", "Lampu reklame dan pengisi balon", "Pelapis besi dan perhiasan"], kunci: 0, pembahasan: "Klorin untuk disinfektan air (kaporit)/pemutih, Iodium untuk antiseptik obat luka." },
+            { id: "SPU-20", materi: "Sistem Periodik Unsur", indikator: "Titik Leleh Logam Alkali", tingkat: "Sulit", bobot: 2.5, pertanyaan: "Kecenderungan titik leleh unsur Logam Alkali (IA) dari atas ke bawah (Li ke Cs) adalah...", pilihan: ["Makin tinggi karena massa atom naik", "Makin rendah karena ikatan logam makin lemah akibat jari-jari membesar", "Konstan", "Sama dengan Halogen", "Naik drastis"], kunci: 1, pembahasan: "Pada logam alkali (IA), dari atas ke bawah jari-jari membesar sehingga ikatan logam melemah -> Titik leleh makin RENDAH." }
+        ];
+
+        // --- GLOBAL APP STATE ---
+        let questionBank = JSON.parse(localStorage.getItem('chem_test_bank')) || DEFAULT_BANK;
+        let examSettings = JSON.parse(localStorage.getItem('chem_test_settings')) || {
+            schoolName: "SMA NEGERI 46 MALUKU TENGAH",
+            appTitle: "CHEM-TEST X",
+            subtitle: "Sistem Asesmen Digital Kimia Kelas X",
+            teacherName: "Sarkia Silawane, S.Pd.",
+            schoolYear: "2026/2027",
+            kktp: 75,
+            durationMinutes: 60,
+            totalExamQuestions: 40,
+            shuffleQuestions: true,
+            shuffleOptions: true,
+            isExamActive: true
+        };
+
+        let examResultsList = JSON.parse(localStorage.getItem('chem_test_results')) || [];
+        
+        // Active Session State
+        let currentStudent = {};
+        let sessionQuestions = [];
+        let currentQIndex = 0;
+        let userAnswers = {}; // { qId: chosenOptionIndex }
+        let flaggedQuestions = {}; // { qId: boolean }
+        let timerInterval = null;
+        let timeLeftSeconds = 0;
+
+        // Init on load
+        window.onload = function() {
+            syncSettingsToUI();
+            renderQuestionBankList();
+            renderResultsTable();
+            checkExistingProgress();
+        };
+
+        function syncSettingsToUI() {
+            document.getElementById('navSchoolName').innerText = examSettings.schoolName;
+            document.getElementById('dispAppTitle').innerText = examSettings.appTitle;
+            document.getElementById('dispSubtitle').innerText = examSettings.subtitle;
+            document.getElementById('dispTeacher').innerText = examSettings.teacherName;
+            document.getElementById('dispYear').innerText = examSettings.schoolYear;
+            document.getElementById('confirmDuration').innerText = examSettings.durationMinutes + " Menit";
+            document.getElementById('instDuration').innerText = examSettings.durationMinutes + " menit";
+            document.getElementById('instTotalQ').innerText = examSettings.totalExamQuestions + " nomor";
+            
+            // Settings form inputs
+            document.getElementById('setExamActive').value = examSettings.isExamActive ? "true" : "false";
+            document.getElementById('setKKTP').value = examSettings.kktp;
+            document.getElementById('setDuration').value = examSettings.durationMinutes;
+            document.getElementById('setTotalQ').value = examSettings.totalExamQuestions;
+            document.getElementById('setShuffleQ').value = examSettings.shuffleQuestions ? "true" : "false";
+            document.getElementById('setShuffleOpt').value = examSettings.shuffleOptions ? "true" : "false";
+
+            document.getElementById('cntBankSoal').innerText = questionBank.length;
+            document.getElementById('cntHasilPeserta').innerText = examResultsList.length;
+        }
+
+        function switchView(tab) {
+            if (tab === 'student') {
+                document.getElementById('studentSection').classList.remove('hidden');
+                document.getElementById('teacherSection').classList.add('hidden');
+                document.getElementById('btnTabStudent').className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition bg-electric-600 text-white shadow-md";
+                document.getElementById('btnTabTeacher').className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition text-slate-300 hover:text-white hover:bg-slate-700/60";
+            } else {
+                document.getElementById('studentSection').classList.add('hidden');
+                document.getElementById('teacherSection').classList.remove('hidden');
+                document.getElementById('btnTabTeacher').className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition bg-electric-600 text-white shadow-md";
+                document.getElementById('btnTabStudent').className = "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-xs md:text-sm transition text-slate-300 hover:text-white hover:bg-slate-700/60";
+            }
+        }
+
+        function showStep(stepName) {
+            ['stepWelcome', 'stepConfirm', 'stepInstructions', 'stepExam', 'stepResult'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            if (stepName === 'welcome') document.getElementById('stepWelcome').classList.remove('hidden');
+            if (stepName === 'confirm') document.getElementById('stepConfirm').classList.remove('hidden');
+            if (stepName === 'instructions') document.getElementById('stepInstructions').classList.remove('hidden');
+            if (stepName === 'exam') document.getElementById('stepExam').classList.remove('hidden');
+            if (stepName === 'result') document.getElementById('stepResult').classList.remove('hidden');
+        }
+
+        // --- STUDENT EXAM LOGIC ---
+        function proceedToConfirm() {
+            if (!examSettings.isExamActive) {
+                alert("Ujian sedang tidak aktif. Harap hubungi guru pengampu.");
+                return;
+            }
+            currentStudent = {
+                nama: document.getElementById('inputNama').value,
+                nisn: document.getElementById('inputNisn').value,
+                kelas: document.getElementById('inputKelas').value,
+                noPeserta: document.getElementById('inputNoPeserta').value
+            };
+
+            document.getElementById('confirmNama').innerText = currentStudent.nama;
+            document.getElementById('confirmNisn').innerText = currentStudent.nisn;
+            document.getElementById('confirmKelas').innerText = "Kelas " + currentStudent.kelas;
+            document.getElementById('confirmNoPeserta').innerText = currentStudent.noPeserta;
+
+            showStep('confirm');
+        }
+
+        function initiateExamSession() {
+            let pool = [...questionBank];
+            
+            // Randomize questions if setting enabled
+            if (examSettings.shuffleQuestions) {
+                const sa = pool.filter(q => q.materi === "Struktur Atom").sort(() => 0.5 - Math.random());
+                const spu = pool.filter(q => q.materi === "Sistem Periodik Unsur").sort(() => 0.5 - Math.random());
+                const half = Math.floor(examSettings.totalExamQuestions / 2);
+                pool = [...sa.slice(0, half), ...spu.slice(0, half)].sort(() => 0.5 - Math.random());
+            } else {
+                pool = pool.slice(0, examSettings.totalExamQuestions);
+            }
+
+            // Randomize options if setting enabled
+            sessionQuestions = pool.map(q => {
+                if (!examSettings.shuffleOptions) return q;
+                let optsWithOrig = q.pilihan.map((text, idx) => ({ text, origIdx: idx }));
+                optsWithOrig.sort(() => 0.5 - Math.random());
+                let newKey = optsWithOrig.findIndex(o => o.origIdx === q.kunci);
+                return {
+                    ...q,
+                    pilihan: optsWithOrig.map(o => o.text),
+                    kunci: newKey
+                };
+            });
+
+            currentQIndex = 0;
+            userAnswers = {};
+            flaggedQuestions = {};
+            timeLeftSeconds = examSettings.durationMinutes * 60;
+
+            showStep('exam');
+            renderCurrentQuestion();
+            renderQuestionNavGrid();
+            startExamTimer();
+        }
+
+        function startExamTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeftSeconds--;
+                if (timeLeftSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    alert("Waktu ujian telah habis! Sistem akan mengumpulkan jawaban Anda otomatis.");
+                    submitFinalExam();
+                    return;
+                }
+                updateTimerDisplay();
+                saveCurrentProgress();
+            }, 1000);
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const m = Math.floor(timeLeftSeconds / 60);
+            const s = timeLeftSeconds % 60;
+            const text = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            const elem = document.getElementById('dispTimer');
+            elem.innerText = text;
+            if (timeLeftSeconds < 300) {
+                elem.className = "text-rose-400 animate-pulse";
+            } else {
+                elem.className = "text-emerald-400";
+            }
+        }
+
+        function renderCurrentQuestion() {
+            const q = sessionQuestions[currentQIndex];
+            document.getElementById('examMateriBadge').innerText = q.materi;
+            document.getElementById('dispCurrentNum').innerText = currentQIndex + 1;
+            document.getElementById('dispTotalNum').innerText = sessionQuestions.length;
+            document.getElementById('dispTingkat').innerText = q.tingkat;
+            document.getElementById('dispBobot').innerText = q.bobot || 2.5;
+            document.getElementById('dispPertanyaan').innerHTML = q.pertanyaan;
+
+            // Options HTML
+            const optsContainer = document.getElementById('dispPilihanContainer');
+            optsContainer.innerHTML = '';
+            
+            q.pilihan.forEach((optText, optIdx) => {
+                const isSelected = userAnswers[q.id] === optIdx;
+                const optLabel = String.fromCharCode(65 + optIdx);
+                
+                const btn = document.createElement('button');
+                btn.onclick = () => selectAnswer(q.id, optIdx);
+                btn.className = `w-full text-left p-4 rounded-xl border-2 transition flex items-start gap-3.5 ${
+                    isSelected
+                        ? 'border-electric-600 bg-blue-50/80 shadow-md ring-1 ring-electric-500'
+                        : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                }`;
+                btn.innerHTML = `
+                    <span class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs md:text-sm shrink-0 ${
+                        isSelected ? 'bg-electric-600 text-white' : 'bg-slate-200 text-slate-700'
+                    }">${optLabel}</span>
+                    <span class="text-xs md:text-sm text-slate-800 pt-0.5 leading-snug">${optText}</span>
+                `;
+                optsContainer.appendChild(btn);
+            });
+
+            // Update Nav Buttons
+            document.getElementById('btnPrev').disabled = currentQIndex === 0;
+            document.getElementById('btnPrev').className = `px-5 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-1.5 border ${
+                currentQIndex === 0 ? 'opacity-40 border-slate-200 text-slate-400 cursor-not-allowed' : 'border-slate-300 text-slate-700 hover:bg-slate-100'
+            }`;
+
+            if (currentQIndex === sessionQuestions.length - 1) {
+                document.getElementById('btnNext').classList.add('hidden');
+                document.getElementById('btnFinishExam').classList.remove('hidden');
+            } else {
+                document.getElementById('btnNext').classList.remove('hidden');
+                document.getElementById('btnFinishExam').classList.add('hidden');
+            }
+
+            // Flag state
+            const isFlagged = flaggedQuestions[q.id];
+            const btnFlag = document.getElementById('btnFlag');
+            if (isFlagged) {
+                btnFlag.className = "px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 border bg-amber-500 border-amber-600 text-white shadow-md";
+                document.getElementById('dispFlagText').innerText = "Ditandai Ragu";
+            } else {
+                btnFlag.className = "px-4 py-2.5 rounded-xl font-bold text-xs md:text-sm flex items-center gap-2 border border-amber-300 text-amber-700 hover:bg-amber-50";
+                document.getElementById('dispFlagText').innerText = "Tandai Ragu-Ragu";
+            }
+
+            renderQuestionNavGrid();
+        }
+
+        function selectAnswer(qId, optIdx) {
+            userAnswers[qId] = optIdx;
+            renderCurrentQuestion();
+            saveCurrentProgress();
+        }
+
+        function toggleFlag() {
+            const qId = sessionQuestions[currentQIndex].id;
+            flaggedQuestions[qId] = !flaggedQuestions[qId];
+            renderCurrentQuestion();
+            saveCurrentProgress();
+        }
+
+        function navQuestion(dir) {
+            const newIndex = currentQIndex + dir;
+            if (newIndex >= 0 && newIndex < sessionQuestions.length) {
+                currentQIndex = newIndex;
+                renderCurrentQuestion();
+            }
+        }
+
+        function renderQuestionNavGrid() {
+            const grid = document.getElementById('gridNavButtons');
+            grid.innerHTML = '';
+            let answeredCount = 0;
+
+            sessionQuestions.forEach((q, idx) => {
+                const isAns = userAnswers[q.id] !== undefined;
+                if (isAns) answeredCount++;
+                const isFlagged = flaggedQuestions[q.id];
+                const isCurrent = idx === currentQIndex;
+
+                let bgClass = "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+                if (isFlagged) {
+                    bgClass = "bg-amber-500 text-white border-amber-600 font-bold";
+                } else if (isAns) {
+                    bgClass = "bg-emerald-500 text-white border-emerald-600 font-bold";
+                }
+
+                const btn = document.createElement('button');
+                btn.onclick = () => { currentQIndex = idx; renderCurrentQuestion(); };
+                btn.className = `h-9 rounded-lg text-xs transition relative font-medium border ${bgClass} ${
+                    isCurrent ? 'ring-2 ring-electric-600 ring-offset-1 border-electric-600 font-black' : ''
+                }`;
+                btn.innerText = idx + 1;
+                grid.appendChild(btn);
+            });
+
+            document.getElementById('dispAnsweredRatio').innerText = `${answeredCount}/${sessionQuestions.length}`;
+        }
+
+        function saveCurrentProgress() {
+            const progress = {
+                currentStudent,
+                sessionQuestions,
+                currentQIndex,
+                userAnswers,
+                flaggedQuestions,
+                timeLeftSeconds
+            };
+            localStorage.setItem('chem_test_progress', JSON.stringify(progress));
+        }
+
+        function checkExistingProgress() {
+            const saved = localStorage.getItem('chem_test_progress');
+            if (saved) {
+                const p = JSON.parse(saved);
+                if (confirm("Ditemukan sesi ujian yang belum selesai atas nama " + p.currentStudent.nama + ". Lanjutkan ujian?")) {
+                    currentStudent = p.currentStudent;
+                    sessionQuestions = p.sessionQuestions;
+                    currentQIndex = p.currentQIndex;
+                    userAnswers = p.userAnswers;
+                    flaggedQuestions = p.flaggedQuestions;
+                    timeLeftSeconds = p.timeLeftSeconds;
+                    showStep('exam');
+                    renderCurrentQuestion();
+                    startExamTimer();
+                } else {
+                    localStorage.removeItem('chem_test_progress');
+                }
+            }
+        }
+
+        function confirmSubmitExam() {
+            const unanswered = sessionQuestions.length - Object.keys(userAnswers).length;
+            let msg = "Apakah Anda yakin ingin mengakhiri dan mengumpulkan seluruh jawaban ujian?";
+            if (unanswered > 0) {
+                msg = `Masih ada ${unanswered} soal yang BELUM dijawab. ` + msg;
+            }
+            if (confirm(msg)) {
+                submitFinalExam();
+            }
+        }
+
+        function submitFinalExam() {
+            clearInterval(timerInterval);
+
+            let scoreObtained = 0;
+            let maxScore = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let unansweredCount = 0;
+
+            let topicStats = {
+                "Struktur Atom": { total: 0, correct: 0 },
+                "Sistem Periodik Unsur": { total: 0, correct: 0 }
+            };
+
+            sessionQuestions.forEach(q => {
+                const weight = q.bobot || 2.5;
+                maxScore += weight;
+
+                if (!topicStats[q.materi]) {
+                    topicStats[q.materi] = { total: 0, correct: 0 };
+                }
+                topicStats[q.materi].total += 1;
+
+                const userAns = userAnswers[q.id];
+                if (userAns === undefined) {
+                    unansweredCount++;
+                } else if (userAns === q.kunci) {
+                    correctCount++;
+                    scoreObtained += weight;
+                    topicStats[q.materi].correct += 1;
+                } else {
+                    incorrectCount++;
+                }
+            });
+
+            const finalScore = maxScore > 0 ? Math.round((scoreObtained / maxScore) * 100) : 0;
+            const isPassed = finalScore >= examSettings.kktp;
+            
+            let predikat = "E";
+            if (finalScore >= 90) predikat = "A (Sangat Baik)";
+            else if (finalScore >= 80) predikat = "B (Baik)";
+            else if (finalScore >= 75) predikat = "C (Cukup)";
+            else if (finalScore >= 60) predikat = "D (Kurang)";
+            else predikat = "E (Sangat Kurang)";
+
+            const resultObj = {
+                id: "RES-" + Date.now(),
+                timestamp: new Date().toLocaleString('id-ID'),
+                student: currentStudent,
+                score: finalScore,
+                correctCount,
+                incorrectCount,
+                unansweredCount,
+                totalQuestions: sessionQuestions.length,
+                isPassed,
+                predikat,
+                topicStats,
+                userAnswers,
+                sessionQuestions
+            };
+
+            examResultsList.unshift(resultObj);
+            localStorage.setItem('chem_test_results', JSON.stringify(examResultsList));
+            localStorage.removeItem('chem_test_progress');
+
+            displayStudentResult(resultObj);
+        }
+
+        function displayStudentResult(res) {
+            document.getElementById('resKKTPVal').innerText = examSettings.kktp;
+            document.getElementById('resFinalScore').innerText = res.score;
+            document.getElementById('resPredikat').innerText = "Predikat: " + res.predikat;
+            document.getElementById('resTotal').innerText = res.totalQuestions;
+            document.getElementById('resBenar').innerText = res.correctCount;
+            document.getElementById('resSalah').innerText = res.incorrectCount;
+            document.getElementById('resKosong').innerText = res.unansweredCount;
+
+            const banner = document.getElementById('resultHeaderBanner');
+            const title = document.getElementById('resultHeaderTitle');
+            const icon = document.getElementById('resultHeaderIcon');
+
+            if (res.isPassed) {
+                banner.className = "p-8 text-center text-white bg-gradient-to-r from-emerald-600 to-teal-700";
+                title.innerText = "SELAMAT! ANDA LULUS SAS";
+                icon.className = "fa-solid fa-award text-4xl text-white";
+            } else {
+                banner.className = "p-8 text-center text-white bg-gradient-to-r from-rose-600 to-red-800";
+                title.innerText = "BELUM MENCAPAI KKTP";
+                icon.className = "fa-solid fa-circle-exclamation text-4xl text-white";
+            }
+
+            // Topic bars
+            const topicContainer = document.getElementById('resTopicBars');
+            topicContainer.innerHTML = '';
+            Object.entries(res.topicStats).forEach(([topic, stat]) => {
+                const pct = stat.total > 0 ? Math.round((stat.correct / stat.total) * 100) : 0;
+                let barColor = pct >= 75 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-rose-500';
+                
+                const div = document.createElement('div');
+                div.className = "bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-1.5";
+                div.innerHTML = `
+                    <div class="flex justify-between text-xs font-semibold">
+                        <span class="text-slate-800">${topic}</span>
+                        <span class="text-electric-700">${stat.correct}/${stat.total} Benar (${pct}%)</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden">
+                        <div class="h-full ${barColor}" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                topicContainer.appendChild(div);
+            });
+
+            // Explanations
+            const expList = document.getElementById('resExplanationList');
+            expList.innerHTML = '';
+            res.sessionQuestions.forEach((q, idx) => {
+                const uAns = res.userAnswers[q.id];
+                const isCorrect = uAns === q.kunci;
+
+                const div = document.createElement('div');
+                div.className = `p-5 rounded-xl border-2 space-y-3 ${isCorrect ? 'border-emerald-200 bg-emerald-50/30' : 'border-rose-200 bg-rose-50/30'}`;
+                
+                let optsHtml = '';
+                q.pilihan.forEach((optText, oIdx) => {
+                    const isKey = oIdx === q.kunci;
+                    const isUser = oIdx === uAns;
+                    const label = String.fromCharCode(65 + oIdx);
+
+                    let itemClass = "text-slate-600";
+                    if (isKey) itemClass = "bg-emerald-100 text-emerald-900 font-bold border border-emerald-300 p-2 rounded-lg";
+                    else if (isUser && !isKey) itemClass = "bg-rose-100 text-rose-900 font-semibold border border-rose-300 p-2 rounded-lg";
+                    else itemClass = "p-2 rounded-lg text-slate-700";
+
+                    optsHtml += `
+                        <div class="${itemClass} flex items-center justify-between text-xs">
+                            <span><strong>${label}.</strong> ${optText}</span>
+                            ${isKey ? '<i class="fa-solid fa-check text-emerald-700"></i>' : ''}
+                        </div>
+                    `;
+                });
+
+                div.innerHTML = `
+                    <div class="flex justify-between items-start gap-2">
+                        <span class="font-bold text-xs text-slate-800">Soal ${idx + 1}. (${q.materi})</span>
+                        <span class="text-[10px] px-2.5 py-1 rounded-full font-bold ${isCorrect ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${isCorrect ? 'BENAR' : uAns === undefined ? 'TIDAK DIJAWAB' : 'SALAH'}
+                        </span>
+                    </div>
+                    <p class="text-xs md:text-sm text-slate-800 font-medium">${q.pertanyaan}</p>
+                    <div class="space-y-1">${optsHtml}</div>
+                    <div class="bg-slate-100 p-3 rounded-lg border border-slate-200 text-xs text-slate-700 space-y-1">
+                        <span class="font-bold text-slate-900 block"><i class="fa-regular fa-lightbulb text-amber-500"></i> Pembahasan Guru:</span>
+                        <p>${q.pembahasan}</p>
+                    </div>
+                `;
+                expList.appendChild(div);
+            });
+
+            showStep('result');
+            renderResultsTable();
+        }
+
+        function resetStudentExam() {
+            showStep('welcome');
+            document.getElementById('formIdentitas').reset();
+        }
+
+        // --- TEACHER / ADMIN LOGIC ---
+        function handleTeacherLogin() {
+            const pin = document.getElementById('inputTeacherPin').value;
+            if (pin === 'admin123' || pin === '4646') {
+                document.getElementById('teacherLoginForm').classList.add('hidden');
+                document.getElementById('teacherDashboard').classList.remove('hidden');
+                switchTeacherSubTab('bank');
+            } else {
+                alert("PIN Akses Salah! (Gunakan PIN default: admin123)");
+            }
+        }
+
+        function logoutTeacher() {
+            document.getElementById('inputTeacherPin').value = '';
+            document.getElementById('teacherDashboard').classList.add('hidden');
+            document.getElementById('teacherLoginForm').classList.remove('hidden');
+        }
+
+        function switchTeacherSubTab(sub) {
+            ['subTabBank', 'subTabSettings', 'subTabResults', 'subTabAnalytics'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            ['btnSubBank', 'btnSubSettings', 'btnSubResults', 'btnSubAnalytics'].forEach(id => {
+                document.getElementById(id).className = "px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition text-slate-600 hover:bg-slate-100";
+            });
+
+            if (sub === 'bank') {
+                document.getElementById('subTabBank').classList.remove('hidden');
+                document.getElementById('btnSubBank').className = "px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition bg-electric-600 text-white shadow-md";
+            }
+            if (sub === 'settings') {
+                document.getElementById('subTabSettings').classList.remove('hidden');
+                document.getElementById('btnSubSettings').className = "px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition bg-electric-600 text-white shadow-md";
+            }
+            if (sub === 'results') {
+                document.getElementById('subTabResults').classList.remove('hidden');
+                document.getElementById('btnSubResults').className = "px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition bg-electric-600 text-white shadow-md";
+            }
+            if (sub === 'analytics') {
+                document.getElementById('subTabAnalytics').classList.remove('hidden');
+                document.getElementById('btnSubAnalytics').className = "px-4 py-2 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 transition bg-electric-600 text-white shadow-md";
+                renderAnalyticsChart();
+            }
+        }
+
+        function renderQuestionBankList() {
+            const list = document.getElementById('questionBankList');
+            list.innerHTML = '';
+            const search = document.getElementById('searchQuestion').value.toLowerCase();
+            const filterMat = document.getElementById('filterMateri').value;
+
+            const filtered = questionBank.filter(q => {
+                const mSearch = q.pertanyaan.toLowerCase().includes(search) || q.indikator.toLowerCase().includes(search);
+                const mFilter = filterMat === 'All' || q.materi === filterMat;
+                return mSearch && mFilter;
+            });
+
+            document.getElementById('cntBankSoal').innerText = questionBank.length;
+
+            filtered.forEach((q) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl shadow-md p-5 border border-slate-200 space-y-3";
+                
+                let optsHtml = '';
+                q.pilihan.forEach((optText, oIdx) => {
+                    const isKey = oIdx === q.kunci;
+                    optsHtml += `
+                        <div class="p-2 rounded-lg border text-xs ${isKey ? 'bg-emerald-50 border-emerald-400 font-bold text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'}">
+                            ${String.fromCharCode(65 + oIdx)}. ${optText}
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start gap-3">
+                        <div class="flex items-center gap-2 flex-wrap text-xs">
+                            <span class="bg-navy-900 text-white font-black px-2.5 py-1 rounded-lg">${q.id}</span>
+                            <span class="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-lg">${q.materi}</span>
+                            <span class="bg-slate-100 text-slate-700 font-semibold px-2.5 py-1 rounded-lg">${q.tingkat}</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editQuestionModal('${q.id}')" class="p-1.5 text-electric-600 hover:bg-blue-50 rounded-lg"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteQuestion('${q.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-500 italic">Indikator: ${q.indikator}</p>
+                    <p class="text-xs md:text-sm font-semibold text-slate-800">${q.pertanyaan}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">${optsHtml}</div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function openQuestionModal() {
+            document.getElementById('editQId').value = '';
+            document.getElementById('modalQTitle').innerText = 'Tambah Soal Baru';
+            document.getElementById('editQIndikator').value = '';
+            document.getElementById('editQPertanyaan').value = '';
+            document.getElementById('editOpt0').value = '';
+            document.getElementById('editOpt1').value = '';
+            document.getElementById('editOpt2').value = '';
+            document.getElementById('editOpt3').value = '';
+            document.getElementById('editOpt4').value = '';
+            document.getElementById('editQPembahasan').value = '';
+            document.getElementById('modalQuestion').classList.remove('hidden');
+        }
+
+        function closeQuestionModal() {
+            document.getElementById('modalQuestion').classList.add('hidden');
+        }
+
+        function editQuestionModal(id) {
+            const q = questionBank.find(item => item.id === id);
+            if (!q) return;
+
+            document.getElementById('editQId').value = q.id;
+            document.getElementById('modalQTitle').innerText = `Edit Soal (${q.id})`;
+            document.getElementById('editQMateri').value = q.materi;
+            document.getElementById('editQTingkat').value = q.tingkat;
+            document.getElementById('editQIndikator').value = q.indikator;
+            document.getElementById('editQPertanyaan').value = q.pertanyaan;
+            document.getElementById('editOpt0').value = q.pilihan[0] || '';
+            document.getElementById('editOpt1').value = q.pilihan[1] || '';
+            document.getElementById('editOpt2').value = q.pilihan[2] || '';
+            document.getElementById('editOpt3').value = q.pilihan[3] || '';
+            document.getElementById('editOpt4').value = q.pilihan[4] || '';
+            document.getElementById('editQPembahasan').value = q.pembahasan;
+
+            const radios = document.getElementsByName('editQKunci');
+            radios[q.kunci].checked = true;
+
+            document.getElementById('modalQuestion').classList.remove('hidden');
+        }
+
+        function saveQuestionForm() {
+            const id = document.getElementById('editQId').value;
+            const materi = document.getElementById('editQMateri').value;
+            const tingkat = document.getElementById('editQTingkat').value;
+            const indikator = document.getElementById('editQIndikator').value;
+            const pertanyaan = document.getElementById('editQPertanyaan').value;
+            const pilihan = [
+                document.getElementById('editOpt0').value,
+                document.getElementById('editOpt1').value,
+                document.getElementById('editOpt2').value,
+                document.getElementById('editOpt3').value,
+                document.getElementById('editOpt4').value
+            ];
+            const pembahasan = document.getElementById('editQPembahasan').value;
+
+            const radios = document.getElementsByName('editQKunci');
+            let kunci = 0;
+            radios.forEach((r, idx) => { if (r.checked) kunci = idx; });
+
+            if (id) {
+                // Edit
+                const idx = questionBank.findIndex(q => q.id === id);
+                if (idx !== -1) {
+                    questionBank[idx] = { id, materi, tingkat, bobot: 2.5, indikator, pertanyaan, pilihan, kunci, pembahasan };
+                }
+            } else {
+                // New
+                const newId = "Q-" + (questionBank.length + 1).toString().padStart(2, '0');
+                questionBank.push({ id: newId, materi, tingkat, bobot: 2.5, indikator, pertanyaan, pilihan, kunci, pembahasan });
+            }
+
+            localStorage.setItem('chem_test_bank', JSON.stringify(questionBank));
+            closeQuestionModal();
+            renderQuestionBankList();
+        }
+
+        function deleteQuestion(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus soal " + id + "?")) {
+                questionBank = questionBank.filter(q => q.id !== id);
+                localStorage.setItem('chem_test_bank', JSON.stringify(questionBank));
+                renderQuestionBankList();
+            }
+        }
+
+        function exportBankJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questionBank, null, 2));
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", `Bank_Soal_CHEMTEST_X_${Date.now()}.json`);
+            dl.click();
+        }
+
+        function importBankJSON(event) {
+            const reader = new FileReader();
+            reader.readAsText(event.target.files[0], "UTF-8");
+            reader.onload = (e) => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (Array.isArray(parsed)) {
+                        questionBank = parsed;
+                        localStorage.setItem('chem_test_bank', JSON.stringify(questionBank));
+                        renderQuestionBankList();
+                        alert("Bank Soal berhasil diperbarui dari file JSON!");
+                    }
+                } catch (err) {
+                    alert("Gagal membaca berkas JSON.");
+                }
+            };
+        }
+
+        function saveExamSettings() {
+            examSettings.isExamActive = document.getElementById('setExamActive').value === "true";
+            examSettings.kktp = Number(document.getElementById('setKKTP').value);
+            examSettings.durationMinutes = Number(document.getElementById('setDuration').value);
+            examSettings.totalExamQuestions = Number(document.getElementById('setTotalQ').value);
+            examSettings.shuffleQuestions = document.getElementById('setShuffleQ').value === "true";
+            examSettings.shuffleOptions = document.getElementById('setShuffleOpt').value === "true";
+
+            localStorage.setItem('chem_test_settings', JSON.stringify(examSettings));
+            syncSettingsToUI();
+            alert("Pengaturan Ujian Berhasil Disimpan!");
+        }
+
+        function renderResultsTable() {
+            const tbody = document.getElementById('tableResultsBody');
+            tbody.innerHTML = '';
+            document.getElementById('cntHasilPeserta').innerText = examResultsList.length;
+
+            if (examResultsList.length === 0) {
+                tbody.innerHTML = `<tr><td colSpan="8" class="p-6 text-center text-slate-400 italic">Belum ada data ujian peserta yang tersimpan.</td></tr>`;
+                return;
+            }
+
+            examResultsList.forEach((r, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold">${idx + 1}</td>
+                    <td class="p-3 text-slate-500">${r.timestamp}</td>
+                    <td class="p-3 font-bold text-slate-900">${r.student.nama}</td>
+                    <td class="p-3 text-slate-600">${r.student.nisn}</td>
+                    <td class="p-3 font-semibold text-electric-600">Kelas ${r.student.kelas}</td>
+                    <td class="p-3">
+                        <span class="text-emerald-700 font-bold">${r.correctCount}B</span> / 
+                        <span class="text-rose-600 font-bold">${r.incorrectCount}S</span> / 
+                        <span class="text-slate-500">${r.unansweredCount}K</span>
+                    </td>
+                    <td class="p-3 text-sm font-black text-slate-900">${r.score}</td>
+                    <td class="p-3">
+                        <span class="px-2.5 py-1 rounded-full font-bold text-[10px] ${r.isPassed ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}">
+                            ${r.isPassed ? 'TUNTAS' : 'BELUM TUNTAS'}
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportResultsCSV() {
+            if (examResultsList.length === 0) {
+                alert("Belum ada data rekap nilai untuk diunduh.");
+                return;
+            }
+            let csv = "data:text/csv;charset=utf-8,No,Tanggal,Nama,NISN,Kelas,No Peserta,Nilai,Status,Predikat,Benar,Salah,Kosong\n";
+            examResultsList.forEach((r, idx) => {
+                csv += `${idx + 1},"${r.timestamp}","${r.student.nama}","${r.student.nisn}","${r.student.kelas}","${r.student.noPeserta}",${r.score},"${r.isPassed ? 'TUNTAS' : 'BELUM TUNTAS'}","${r.predikat}",${r.correctCount},${r.incorrectCount},${r.unansweredCount}\n`;
+            });
+            const encoded = encodeURI(csv);
+            const a = document.createElement('a');
+            a.setAttribute('href', encoded);
+            a.setAttribute('download', `Rekap_Nilai_SAS_Kimia_SMAN46_${Date.now()}.csv`);
+            a.click();
+        }
+
+        function clearAllResults() {
+            if (confirm("Apakah Anda yakin ingin menghapus SELURUH rekap nilai siswa? Tindakan ini tidak dapat dibatalkan.")) {
+                examResultsList = [];
+                localStorage.removeItem('chem_test_results');
+                renderResultsTable();
+            }
+        }
+
+        let myChart = null;
+        function renderAnalyticsChart() {
+            const total = examResultsList.length;
+            document.getElementById('statTotalStudents').innerText = total + " Siswa";
+
+            if (total === 0) {
+                document.getElementById('statAvgScore').innerText = "0";
+                document.getElementById('statMaxScore').innerText = "0";
+                document.getElementById('statPassRate').innerText = "0%";
+                return;
+            }
+
+            const scores = examResultsList.map(r => r.score);
+            const avg = Math.round(scores.reduce((a, b) => a + b, 0) / total);
+            const max = Math.max(...scores);
+            const passed = examResultsList.filter(r => r.isPassed).length;
+            const passPct = Math.round((passed / total) * 100);
+
+            document.getElementById('statAvgScore').innerText = avg;
+            document.getElementById('statMaxScore').innerText = max;
+            document.getElementById('statPassRate').innerText = passPct + "%";
+
+            // Chart Render
+            const ctx = document.getElementById('chartPassRate').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Tuntas (>= KKTP)', 'Belum Tuntas'],
+                    datasets: [{
+                        data: [passed, total - passed],
+                        backgroundColor: ['#10b981', '#f43f5e']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        }
+    </script>
+</body>
+</html>
